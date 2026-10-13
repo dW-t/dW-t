@@ -2,8 +2,11 @@ name: GitHub-Profile-Summary-Cards
 
 on:
   schedule: # execute every 24 hours
-    - cron: "* */24 * * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -11,9 +14,11 @@ jobs:
     name: generate
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: vn7n24fzkq/github-profile-summary-cards@release
+      # 第三者の Action は書き換えられないようコミット SHA で固定する（タグは作者が差し替えられる）
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: vn7n24fzkq/github-profile-summary-cards@09ba4dde3f9b05828cb99553561db3f4ff07703f # release (2026-08-06)
         env:
-          GITHUB_TOKEN: ${{ secrets.SUMMARY_CARDS_TOKEN }}
+          # 個人のトークンではなく、この実行の間だけ有効でこのリポジトリにしか使えない組み込みトークンを渡す
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           USERNAME: ${{ github.repository_owner }}
